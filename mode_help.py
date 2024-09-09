@@ -4,7 +4,6 @@
 ################################################################################
 
 
-import tkinter as tk
 import tkinter.messagebox as mb
 
 
@@ -23,7 +22,7 @@ def mode_help(modo):
             mb.showinfo(message="- 8x8 casillas\n- 10 minas", 
                         title="Principiante")
         case "intermedio":
-            mb.showinfo(message="- 8x8 casillas\n- 10 minas",
+            mb.showinfo(message="- 16x16 casillas\n- 40 minas",
                         title="Intermedio")
         case "experto":
             mb.showinfo(message="- 16x30 casillas\n- 99 minas",

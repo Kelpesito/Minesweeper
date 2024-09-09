@@ -6,6 +6,7 @@
 
 
 import tkinter as tk
+import tkinter.messagebox as mb
 from PIL import Image, ImageTk
 import numpy as np
 
@@ -16,6 +17,8 @@ from game import generate_matrix
 from controles import bind_controles
 from load_images import load_images
 from IA import IA
+from centrar_ventana import centrar_ventana
+from resource_path import resource_path
 
 
 class Minesweeper():
@@ -25,7 +28,6 @@ class Minesweeper():
         Inicializa constantes.
         """
     
-        # Inicializa constantes
         self.COLOR_PRINCIPIANTE = "#B7F377"  # Color principiante
         self.COLOR_INTERMEDIO = "#FAF36C"  # Color intermedio
         self.COLOR_EXPERTO = "#FA6C6C"  # Color experto
@@ -36,11 +38,13 @@ class Minesweeper():
         self.FUENTE = ("Courier New", 10)  # Fuente de la partida
         self.FUENTE_MINAS_RESTANTES = ("Courier New", 12)  # Fuente de 
         # indicador de minas restantes
+        self.FUENTE_EDIT_PERS = ("Courier New", 15)  # Fuente de la pantalla de 
+        # personalización de partida personalizada
                 
         self.FONDO = "#898989"  # Color fondo  
-        self.FONDO_BOTONES_MAIN = "#7d7c7c"  # Color fondo botones del menú 
-        # principal
-        self.FONDO_BOTONES = "#d1d1d1"  # Color fondo botones de la partida
+        self.FONDO_BOTONES = "#7d7c7c"  # Color fondo botones de la partida
+        self.FONDO_BOTONES_MAIN = "#d1d1d1"  # Color fondo botones del menú 
+        # principal 
         
         self.INFO_GAME = {"principiante": [8,8,10], "intermedio": [16,16,40], 
                           "experto": [30,16,99]}  # Diccionario con base, 
@@ -51,8 +55,10 @@ class Minesweeper():
         self.H = None  # Alto del tablero
         self.MINAS = None  # Número de minas
         
+        self.IA = None  # Estado de IA
+        
         # Definir si IA genera elementos random o lo hace el usuario
-        with open("random_on_of.txt") as file:
+        with open(resource_path("random_on_of/random_on_of.txt")) as file:
             content = file.read().strip().lower()
             self.IA_random = True if content == "on" else False if content == \
             "off" else None
@@ -73,10 +79,11 @@ class Minesweeper():
         self.ventana = tk.Tk()
         self.ventana.title("Buscaminas")
         self.ventana.geometry("500x500")
+        centrar_ventana(self.ventana, width=500, height=500)
         self.ventana.configure(bg=self.FONDO)
         
         # Icono
-        icono = tk.PhotoImage(file="1f4a3.png")
+        icono = tk.PhotoImage(file=resource_path("1f4a3.png"))
         self.ventana.iconphoto(True, icono)
         
         # Título
@@ -196,13 +203,13 @@ class Minesweeper():
             size = [self.H, self.B]
             self.Estado = np.zeros(size, dtype=int)
             
-            minesweeper.Field = np.zeros(size, dtype=int)
+            self.Field = np.zeros(size, dtype=int)
             
             self.movs = 0  # Variable si se ha hecho el primer movimiento
             self.IA = False  # Booleano que indica si IA está activa
         
             # Asignación de controles
-            bind_controles(minesweeper)
+            bind_controles(self)
         
             # Bucle de juego
             self.juego.mainloop()
@@ -210,11 +217,6 @@ class Minesweeper():
             
     def generate_game(self):
         """
-        Parámetros:
-        -----------
-        modo: Modo de juego:
-            "principiante", "intermedio", "experto", "personalizado".
-        -----------
         Crea la ventana del juego.
         Crea la matriz de botones.
         """
@@ -233,6 +235,7 @@ class Minesweeper():
         ancho_ventana = size[0] * button_width + window_padding
         alto_ventana = size[1] * button_height + extra_padding_height
         self.juego.geometry(f"{ancho_ventana}x{alto_ventana}")
+        centrar_ventana(self.juego, width=ancho_ventana, height=alto_ventana)
         self.juego.configure(bg=self.FONDO)
         
         # Barra de opciones
@@ -242,15 +245,15 @@ class Minesweeper():
         
         # Botón de nueva partida
         np_Button = tk.Button(bar_Frame, text="Nueva partida", font=self.FUENTE,
-                              bg=self.FONDO_BOTONES,
-                              activebackground=self.FONDO_BOTONES,
+                              bg=self.FONDO_BOTONES_MAIN,
+                              activebackground=self.FONDO_BOTONES_MAIN,
                               command=lambda: new_play(self, True, self.modo))
         np_Button.grid(row=0, column=0, padx=5)
         
         # Botón de ir al menú principal
         mp_Button = tk.Button(bar_Frame, text="Menú principal",
-                              font=self.FUENTE, bg=self.FONDO_BOTONES, 
-                              activebackground=self.FONDO_BOTONES,
+                              font=self.FUENTE, bg=self.FONDO_BOTONES_MAIN, 
+                              activebackground=self.FONDO_BOTONES_MAIN,
                               command=lambda: main_menu(self, True))
         mp_Button.grid(row=0, column=1, padx=5)
         
@@ -265,7 +268,7 @@ class Minesweeper():
         
         # Indicador IA
         self.canvas = tk.Canvas(bar_Frame, width=30, height=30, bg=self.FONDO,
-                           highlightthickness=0, bd=0, relief="flat")
+                                highlightthickness=0, bd=0, relief="flat")
         self.circle = self.canvas.create_oval(2, 2, 28, 28, fill="red")
         self.canvas.grid(row=0, column=5, padx=5)
 
@@ -278,13 +281,13 @@ class Minesweeper():
         generate_matrix(self)
     
         # Botón IA
-        imagen = Image.open("Imagenes/facewin.png")
+        imagen = Image.open(resource_path("Imagenes/facewin.png"))
         imagen = imagen.resize((30, 30), Image.LANCZOS)
         imagen = ImageTk.PhotoImage(imagen)
         
         ia_Button = tk.Button(bar_Frame, image=imagen, font=self.FUENTE,
-                              bg=self.FONDO_BOTONES,
-                              activebackground=self.FONDO_BOTONES,
+                              bg=self.FONDO_BOTONES_MAIN,
+                              activebackground=self.FONDO_BOTONES_MAIN,
                               highlightthickness=0, bd=0, relief="flat",
                               command=lambda: IA(self))
         ia_Button.image = imagen

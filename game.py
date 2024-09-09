@@ -14,9 +14,6 @@ import tkinter as tk
 import random
 
 
-FONDO_BOTONES = "#7d7c7c"  # Color fondo botones
-
-
 def generate_matrix(minesweeper):
     """
     Parámetros:
@@ -32,9 +29,11 @@ def generate_matrix(minesweeper):
         for j in range(minesweeper.B):
             minesweeper.Matrix[i,j] = tk.Label(minesweeper.Game, width=2, 
                                                height=1,
-                                               font=("Courier New", 12), 
-                                               bg=FONDO_BOTONES,
-                                               activebackground=FONDO_BOTONES)
+                                               font=minesweeper.
+                                               FUENTE_MINAS_RESTANTES, 
+                                               bg=minesweeper.FONDO_BOTONES,
+                                               activebackground=minesweeper.
+                                               FONDO_BOTONES)
             minesweeper.Matrix[i,j].y = i
             minesweeper.Matrix[i,j].x = j
             minesweeper.Matrix[i,j].grid(row=i, column=j, padx=1, pady=1)
@@ -52,15 +51,13 @@ def generate_mines(minesweeper, yo, xo):
         Si = 0: No hay mina
         Si = 9: Hay mina
     """
-    
+
     # Generar la matriz de minas
     minas = minesweeper.MINAS
     while minas > 0:
         x = random.choice(range(minesweeper.B))
         y = random.choice(range(minesweeper.H))
-        if (y,x) == (yo,xo):
-            continue
-        elif minesweeper.Field[y,x] == 0:
+        if minesweeper.Field[y,x] == 0 and (y,x) != (yo,xo):
             minesweeper.Field[y,x] = 9
             minas -= 1
 
@@ -119,7 +116,6 @@ def vaciado(minesweeper, y, x):
                     
                     if 0 <= ny < minesweeper.H and 0 <= nx < minesweeper.B and \
                     minesweeper.Estado[ny, nx] != 1:  
-                        
                         minesweeper.Estado[ny, nx] = 1
                             
                         if minesweeper.Field[ny, nx] == 0:
@@ -144,22 +140,14 @@ def Victoria(minesweeper):
     minesweeper: Instancia buscaminas (Minesweeper)
     -----------
     Comprueba si se ha ganado la partida:
-        Las minas o están con bandera o vacías 
+        Las casillas que no son minas han sido descubiertas 
     """
     
-    cont = 0
     for i in range(minesweeper.H):
         for j in range(minesweeper.B):
-            if minesweeper.Estado[i,j] == 1 and minesweeper.Field[i][j] != 9:
-                continue
-            elif (minesweeper.Estado[i,j] == -1 or minesweeper.Estado[i,j] == 
-                  0) and minesweeper.Field[i][j] == 9:
-                continue
-            else:
-                cont += 1
-                if cont == 1:
-                    return False
-    return True
+            if minesweeper.Field[i,j] != 9 and minesweeper.Estado[i,j] != 1:
+                return False
+    return True 
 
 
 def Solucion(minesweeper, y, x):

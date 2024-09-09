@@ -15,15 +15,20 @@ from game import Victoria, generate_mines, generate_clues, vaciado, Solucion
 from mm_np import main_menu, new_play
 
 
-FONDO_BOTONES = "#7d7c7c"  # Color fondo botones
-
-
 def bind_controles(minesweeper, y=None, x=None, Descubrir=None, Bandera=None, 
                    Interrogante=None):
     """
     Parámetro:
     ----------
     minesweeper: Instancia buscaminas (Minesweeper)
+    
+    y,x: Posición que se desea asignar controles
+    
+    Descubrir: Booleano si se desea asignar control descubrir()
+    
+    Bandera: Booleano si se desea asignar control bandera()
+    
+    Interrogante: Booleano si se desea asignar control interrogante()
     ----------
     Proporciona los controles a los botones del tablero:
         Clic izquierdo: Descubrir
@@ -36,14 +41,14 @@ def bind_controles(minesweeper, y=None, x=None, Descubrir=None, Bandera=None,
         for i in range(minesweeper.H):
             for j in range(minesweeper.B):
                 minesweeper.Matrix[i,j].bind("<Button-1>", 
-                                            partial(descubrir, 
-                                                    minesweeper=minesweeper))
+                                             partial(descubrir, 
+                                                     minesweeper=minesweeper))
                 minesweeper.Matrix[i,j].bind("<Button-3>",
-                                            partial(bandera, 
-                                                    minesweeper=minesweeper))
+                                             partial(bandera, 
+                                                     minesweeper=minesweeper))
                 minesweeper.Matrix[i,j].bind("<Button-2>",
-                                            partial(interrogante, 
-                                                    minesweeper=minesweeper))
+                                             partial(interrogante, 
+                                                     minesweeper=minesweeper))
     
     else:
         # Darle clic izquierdo a casilla particular
@@ -125,7 +130,6 @@ def descubrir(event, minesweeper):
     
     # Si se pulsa una mina
     if minesweeper.Field[y,x] == 9:
-        
         # Mostrar solución
         Solucion(minesweeper, y, x)
         lost = mb.askyesno(title="Has perdido",
@@ -147,7 +151,6 @@ def bandera(event, minesweeper):
     -----------
     Si la casilla está vacía, cambia el botón por una bandera.
     Si la casilla tiene una bandera, lo cambia por un botón.
-    Finalmente, comprueba si se ha ganado.
     """
     
     # Posición botón
@@ -177,8 +180,9 @@ def bandera(event, minesweeper):
         event.widget.destroy()
         minesweeper.Matrix[y,x] = tk.Label(minesweeper.Game, width=2, height=1,
                                            font=("Courier New", 12),
-                                           bg=FONDO_BOTONES,
-                                           activebackground=FONDO_BOTONES)
+                                           bg=minesweeper.FONDO_BOTONES,
+                                           activebackground=minesweeper.
+                                           FONDO_BOTONES)
         minesweeper.Matrix[y,x].y = y
         minesweeper.Matrix[y,x].x = x
         minesweeper.Matrix[y,x].grid(row=y, column=x, padx=1, pady=1)
@@ -190,16 +194,6 @@ def bandera(event, minesweeper):
         # Dar efecto de nuevo
         bind_controles(minesweeper, y=y, x=x, Descubrir=True, Bandera=True, 
                        Interrogante=True)
-    
-    # Comprobar victoria
-    if Victoria(minesweeper):
-        won = mb.askyesno(title="Felicidades!!",
-                          message="Has ganado :D\n¿Deseas reintentarlo (Sí) o"
-                          " ir al menú principal (No)?")
-        if won:
-            new_play(minesweeper, False, minesweeper.modo)
-        else:
-            main_menu(minesweeper, False)
 
 
 def interrogante(event, minesweeper):
@@ -238,8 +232,9 @@ def interrogante(event, minesweeper):
         event.widget.destroy()
         minesweeper.Matrix[y,x] = tk.Label(minesweeper.Game, width=2, height=1,
                                            font=("Courier New", 12),
-                                           bg=FONDO_BOTONES,
-                                           activebackground=FONDO_BOTONES)
+                                           bg=minesweeper.FONDO_BOTONES,
+                                           activebackground=minesweeper.
+                                           FONDO_BOTONES)
         minesweeper.Matrix[y,x].y = y
         minesweeper.Matrix[y,x].x = x
         minesweeper.Matrix[y,x].grid(row=y, column=x, padx=1, pady=1)

@@ -7,6 +7,8 @@
 import tkinter as tk
 import tkinter.messagebox as mb
 
+from centrar_ventana import centrar_ventana
+
 
 def param_pers(minesweeper):
     """
@@ -17,48 +19,52 @@ def param_pers(minesweeper):
     Crea la pantalla para introducir los parámetros de la partida personalizada
     """
     
-    FUENTE = ("Courier New", 15)
-    FONDO = "#898989"
-        
+    minesweeper.IA = False  # Desactivar IA si es necesario
+
     # Ventana para selección de parámetros partida personalizada
     pers_Config = tk.Tk()
     pers_Config.title("Buscaminas")
     pers_Config.geometry("400x400")
-    pers_Config.configure(bg=FONDO)
+    centrar_ventana(pers_Config, width=400, height=400)
+    pers_Config.configure(bg=minesweeper.FONDO)
     
     # Número de columnas
-    B_Label = tk.Label(pers_Config, text="Número de columnas:", font=FUENTE,
-                       bg=FONDO)
+    B_Label = tk.Label(pers_Config, text="Número de columnas:", 
+                       font=minesweeper.FUENTE_EDIT_PERS, bg=minesweeper.FONDO)
     B_Label.grid(row=0, column=0, padx=2, pady=2)
 
-    B_Entry = tk.Entry(pers_Config, font=FUENTE, width=5)
+    B_Entry = tk.Entry(pers_Config, font=minesweeper.FUENTE_EDIT_PERS, width=5)
     B_Entry.grid(row=0, column=1, padx=2, pady=2)
     
     # Número de filas
-    H_Label = tk.Label(pers_Config, text="Número de filas:", font=FUENTE,
-                    bg=FONDO)
+    H_Label = tk.Label(pers_Config, text="Número de filas:",
+                       font=minesweeper.FUENTE_EDIT_PERS, bg=minesweeper.FONDO)
     H_Label.grid(row=1, column=0, padx=2, pady=2)
 
-    H_Entry = tk.Entry(pers_Config, font=FUENTE, width=5)
+    H_Entry = tk.Entry(pers_Config, font=minesweeper.FUENTE_EDIT_PERS, width=5)
     H_Entry.grid(row=1, column=1, padx=2, pady=2)
-    
+
     # Número de minas
-    MINAS_Label = tk.Label(pers_Config, text="Número de minas:", font=FUENTE,
-                           bg=FONDO)
+    MINAS_Label = tk.Label(pers_Config, text="Número de minas:", 
+                           font=minesweeper.FUENTE_EDIT_PERS,
+                           bg=minesweeper.FONDO)
     MINAS_Label.grid(row=2, column=0, padx=2, pady=2)
     
-    MINAS_Entry = tk.Entry(pers_Config, font=FUENTE, width=5)
+    MINAS_Entry = tk.Entry(pers_Config, 
+                           font=minesweeper.FUENTE_EDIT_PERS, width=5)
     MINAS_Entry.grid(row=2, column=1, padx=2, pady=2)
     
     # Submit button
-    submit_Button = tk.Button(pers_Config, text="Aceptar", font=FUENTE,
+    submit_Button = tk.Button(pers_Config, text="Aceptar", 
+                              font=minesweeper.FUENTE_EDIT_PERS,
                               command=lambda: submit_Pers(minesweeper, B_Entry, 
                                                           H_Entry, MINAS_Entry,
                                                           pers_Config))
     submit_Button.grid(row=3, pady=4)
     
     # Cancel button
-    cancel_Button = tk.Button(pers_Config, text="Cancelar", font=FUENTE,
+    cancel_Button = tk.Button(pers_Config, text="Cancelar", 
+                              font=minesweeper.FUENTE_EDIT_PERS,
                               command=lambda: cancel_Pers(minesweeper, 
                                                           pers_Config))
     cancel_Button.grid(row=3, column=1, pady=4)
@@ -95,7 +101,7 @@ def submit_Pers(minesweeper, B_Entry, H_Entry, MINAS_Entry,
         # Error si no cumple las especificaciones de dimensiones
         if not (8 <= H <= 24 and 8 <= B <= 32 and 1 <= MINAS <= 1 / 3 * H * B):
             mb.showerror(title="Error!",
-                         message="Parámetros incorrectos. Debe ser:\n - Número "
+                         message="Parámetros incorrectos. Debe ser:\n- Número "
                          "de filas: 8-24\n- Número de columnas: 8-32\n- Número "
                          "de minas: 1-1/3 de cuadrados")
         else:
